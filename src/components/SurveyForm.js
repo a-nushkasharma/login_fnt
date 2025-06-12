@@ -1,475 +1,216 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+const statesOfIndia = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu and Kashmir", "Ladakh"];
+
 const SurveyForm = () => {
   const [formData, setFormData] = useState({
-    fullName: '',
-    address: '',
-    gender: '',
-    age: '',
-    state: '',
-    hasChildren: '',
-    childrenCount: '',
-    childrenAge: '',
-    kidsUseTech: '',
-    screenTime: '',
-    troubledByUsage: '',
-    techServiceUsage: '',
-    techService: '',
-    serviceLack: '',
-    palanamExpectation: '',
-    expectedServices: '',
-    troubledByOwnUsage: '',
-    issuesFaced: '',
-    kidsUseTechPurposes: [],
-    otherPurpose: '',
-    majorConcerns: [],
-    otherConcern: '',
-    palanamExpectations: [],
-    additionalRequirements: '',
-    devicesUsed: [],
-    otherDevice: '',
+    fullName: '', gender: '', age: '', address: '', state: '',
+    hasChildren: '', childrenCount: '', childrenAge: '', kidsUseTech: '',
+    devicesUsed: [], otherDevices: '', screenTime: '',
+    usagePurpose: [], otherUsagePurpose: '', troubledByUsage: '',
+    usingMeasures: '', measureDetails: '', concerns: [], otherConcerns: '',
+    expectations: [], otherExpectations: '',solution: ''
   });
 
   const [submitted, setSubmitted] = useState(false);
 
-  const statesOfIndia = [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
-    "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan",
-    "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
-  ];
-
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value, type, checked } = e.target;
-
-    if (type === 'checkbox') {
-      const updatedPurposes = checked
-        ? [...formData.kidsUseTechPurposes, value]
-        : formData.kidsUseTechPurposes.filter((purpose) => purpose !== value);
-      setFormData({ ...formData, kidsUseTechPurposes: updatedPurposes });
+    if (type === "checkbox") {
+      const updatedArray = checked
+        ? [...formData[name], value]
+        : formData[name].filter(v => v !== value);
+      setFormData({ ...formData, [name]: updatedArray });
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
-  const handleCheckboxChange = (e) => {
-    const { name, value, checked } = e.target;
-  
-    if (checked) {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: [...prev[name], value]
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: prev[name].filter((item) => item !== value)
-      }));
-    }
-  };
-  const handleSubmit = async (e) => {
+
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/survey/submit', formData);
-      if (response.status === 201) {
-        setSubmitted(true);
-      }
-    } catch (err) {
-      console.error('Submission error:', err.response?.data || err.message);
-      alert('Failed to submit survey');
+      await axios.post('http://localhost:5000/api/survey/submit', formData);
+      setSubmitted(true);
+    } catch (error) {
+      console.error(error);
+      alert('Error submitting form');
     }
   };
 
-  if (submitted) {
-    return (
-      <div className="max-w-xl mx-auto mt-20 p-6 bg-green-100 rounded-lg shadow-md text-center ">
-        <h2 className="text-2xl font-bold text-green-800 mb-4">Thank you for your feedback!</h2>
-        <p className="text-gray-700">We appreciate you helping us build a better product.</p>
-      </div>
-    );
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 p-4 center mt-20">
-      {/* Full Name */}
-      <div>
-        <label className="block text-sm font-semibold" htmlFor="fullName">
-          Full Name:
-        </label>
-        <input
-          type="text"
-          name="fullName"
-          id="fullName"
-          placeholder="Enter your full name"
-          required
-          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
-          onChange={handleChange}
-        />
-      </div>
-
-      {/* Address */}
-      <div>
-        <label className="block text-sm font-semibold" htmlFor="address">
-          Address (Optional):
-        </label>
-        <input
-          type="text"
-          name="address"
-          id="address"
-          placeholder="Your address (optional)"
-          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
-          onChange={handleChange}
-        />
-      </div>
-
-      {/* State */}
-      <div>
-        <label className="block text-sm font-semibold" htmlFor="state">
-          State:
-        </label>
-        <select
-          name="state"
-          id="state"
-          required
-          className="w-full px-4 py-2 border rounded bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
-          onChange={handleChange}
-        >
-          <option value="">Select your state</option>
-          {statesOfIndia.map((state, index) => (
-            <option key={index} value={state}>
-              {state}
-            </option>
-          ))}
-        </select>
-      </div>
-      {/* Gender */}
-<div>
-  <p className="font-semibold mb-2">Gender</p>
-  <label className="block">
-    <input
-      type="radio"
-      name="gender"
-      value="Male"
-      onChange={handleChange}
-      required
-    />
-    <span className="ml-2">Male</span>
-  </label>
-  <label className="block">
-    <input
-      type="radio"
-      name="gender"
-      value="Female"
-      onChange={handleChange}
-    />
-    <span className="ml-2">Female</span>
-  </label>
-  <label className="block">
-    <input
-      type="radio"
-      name="gender"
-      value="Others"
-      onChange={handleChange}
-    />
-    <span className="ml-2">Others</span>
-  </label>
-</div>
-
-{/* Age */}
-<input
-  type="number"
-  name="age"
-  placeholder="Your Age"
-  required
-  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400 mt-4"
-  onChange={handleChange}
-/>
-
-
-      {/* Do you have children? */}
-      <div>
-        <p className="font-semibold mb-2">Do you have children?</p>
-        <label className="block">
-          <input type="radio" name="hasChildren" value="yes" onChange={handleChange} required />
-          <span className="ml-2">Yes</span>
-        </label>
-        <label className="block">
-          <input type="radio" name="hasChildren" value="no" onChange={handleChange} required />
-          <span className="ml-2">No</span>
-        </label>
-      </div>
-
-      {/* Children details */}
-      {formData.hasChildren === 'yes' && (
-        <>
+  <div
+    className="fixed inset-0 bg-cover bg-center bg-no-repeat overflow-auto"
+    style={{ backgroundImage: `url(${process.env.PUBLIC_URL + "/image7.png"})` }}
+  >
+    <div className="flex items-center justify-center min-h-screen p-4">
+    <div className="w-full max-w-3xl bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-xl">
+      {submitted ? (
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-green-800 mb-4">Thank you for your feedback!</h2>
+          <p className="text-gray-700">We appreciate you helping us build a better product.</p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <h2 className="text-4xl font-extrabold text-purple-800 text-center mb-6 mt-4 drop-shadow">
+            Survey Form
+          </h2>
           <div>
-            <label className="block text-sm font-semibold" htmlFor="childrenCount">
-              How many children do you have?
-            </label>
-            <input
-              type="number"
-              name="childrenCount"
-              id="childrenCount"
-              placeholder="Enter the number of children"
-              required
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
-              onChange={handleChange}
-            />
+            <label className="block text-lg font-semibold mb-1">Full Name:</label>
+            <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} className="w-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" required />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold" htmlFor="childrenAge">
-              Average age of your children:
-            </label>
-            <input
-              type="number"
-              name="childrenAge"
-              id="childrenAge"
-              placeholder="Enter the average age"
-              required
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
-              onChange={handleChange}
-            />
-          </div>
-        </>
-      )}
-
-      {/* Do your kids use technological devices? */}
-      {formData.hasChildren === 'yes' && (
-        <>
-          <div>
-            <label className="block text-sm font-semibold">
-              Do your kids use technological devices?
-            </label>
-            <label className="block">
-              <input
-                type="radio"
-                name="kidsUseTech"
-                value="yes"
-                onChange={handleChange}
-                required
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="block">
-              <input
-                type="radio"
-                name="kidsUseTech"
-                value="no"
-                onChange={handleChange}
-                required
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-
-          {/* What devices does your child use? */}
-          {formData.kidsUseTech === 'yes' && (
-<div>
-  <p className="font-semibold mb-2">What device(s) does your child use?</p>
-  <label className="block">
-    <input
-      type="checkbox"
-      name="devicesUsed"
-      value="Laptop"
-      onChange={handleCheckboxChange}
-    />
-    <span className="ml-2">Laptop</span>
-  </label>
-  <label className="block">
-    <input
-      type="checkbox"
-      name="devicesUsed"
-      value="Mobile Phone"
-      onChange={handleCheckboxChange}
-    />
-    <span className="ml-2">Mobile Phone</span>
-  </label>
-  <label className="block">
-    <input
-      type="checkbox"
-      name="devicesUsed"
-      value="Tablet"
-      onChange={handleCheckboxChange}
-    />
-    <span className="ml-2">Tablet</span>
-  </label>
-  <label className="block">
-    <input
-      type="checkbox"
-      name="devicesUsed"
-      value="Other"
-      onChange={handleCheckboxChange}
-    />
-    <span className="ml-2">Other</span>
-  </label>
-
-  {/* If Other is selected, show text input */}
-  {formData.devicesUsed.includes('Other') && (
-    <input
-      type="text"
-      name="otherDevice"
-      placeholder="Please specify other device(s)"
-      className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400 mt-2"
-      onChange={handleChange}
-    />
-  )}
-</div>
-)}
-          {/* Average screen time */}
-          {formData.kidsUseTech === 'yes' && (
-            <div>
-              <label className="block text-sm font-semibold" htmlFor="screenTime">
-                What is the average screen time of your children?
-              </label>
-              <input
-                type="number"
-                name="screenTime"
-                id="screenTime"
-                placeholder="Enter the average screen time in hours"
-                required
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
-                onChange={handleChange}
-              />
+            <label className="block text-lg font-semibold mb-1">Gender:</label>
+            <div className="space-y-1">
+              <label className="block"><input type="radio" name="gender" value="male" onChange={handleChange} required /> Male</label>
+              <label className="block"><input type="radio" name="gender" value="female" onChange={handleChange} /> Female</label>
             </div>
-          )}
+          </div>
 
-          {/* Purposes for using devices */}
-          {formData.kidsUseTech === 'yes' && (
-            <div>
-              <p className="font-semibold mb-2">What purposes do your kids use technological devices for?</p>
-              <label className="block">
-                <input
-                  type="checkbox"
-                  name="kidsUseTechPurposes"
-                  value="Educational"
-                  onChange={handleChange}
-                />
-                <span className="ml-2">Educational</span>
-              </label>
-              <label className="block">
-                <input
-                  type="checkbox"
-                  name="kidsUseTechPurposes"
-                  value="Entertainment"
-                  onChange={handleChange}
-                />
-                <span className="ml-2">Entertainment</span>
-              </label>
-              <label className="block">
-                <input
-                  type="checkbox"
-                  name="kidsUseTechPurposes"
-                  value="Social Media"
-                  onChange={handleChange}
-                />
-                <span className="ml-2">Social Media</span>
-              </label>
-              <label className="block">
-                <input
-                  type="checkbox"
-                  name="kidsUseTechPurposes"
-                  value="Other"
-                  onChange={handleChange}
-                />
-                <span className="ml-2">Other (please specify):</span>
-              </label>
-              {formData.kidsUseTechPurposes.includes('Other') && (
-                <input
-                  type="text"
-                  name="otherPurpose"
-                  placeholder="Specify other purposes"
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
-                  onChange={handleChange}
-                />
+          <div>
+            <label className="block text-lg font-semibold mb-1">Age:</label>
+            <input type="number" name="age" value={formData.age} onChange={handleChange} className="w-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" required />
+          </div>
+
+          <div>
+            <label className="block text-lg font-semibold mb-1">Address:</label>
+            <textarea name="address" value={formData.address} onChange={handleChange} className="w-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" required />
+          </div>
+
+          <div>
+            <label className="block text-lg font-semibold mb-1">State:</label>
+            <select name="state" value={formData.state} onChange={handleChange} className="ww-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" required>
+              <option value="">Select State</option>
+              {statesOfIndia.map(state => <option key={state} value={state}>{state}</option>)}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-lg font-semibold mb-1">Do you have children?</label>
+            <div className="space-y-1">
+              <label className="block"><input type="radio" name="hasChildren" value="yes" onChange={handleChange} /> Yes</label>
+              <label className="block"><input type="radio" name="hasChildren" value="no" onChange={handleChange} /> No</label>
+            </div>
+          </div>
+
+          {formData.hasChildren === 'yes' && (
+            <>
+              <div>
+                <label className="block text-lg font-semibold mb-1">How many children do you have?</label>
+                <input type="number" name="childrenCount" value={formData.childrenCount} onChange={handleChange} className="w-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" />
+              </div>
+
+              <div>
+                <label className="block text-lg font-semibold mb-1">What is the average age of your children:</label>
+                <input type="number" name="childrenAge" value={formData.childrenAge} onChange={handleChange} className="w-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" />
+              </div>
+
+              <div>
+                <label className="block text-lg font-semibold mb-1">Do your children use technological devices?</label>
+                <div className="space-y-1">
+                  <label className="block"><input type="radio" name="kidsUseTech" value="yes" onChange={handleChange} /> Yes/Sometimes</label>
+                  <label className="block"><input type="radio" name="kidsUseTech" value="no" onChange={handleChange} /> No</label>
+                </div>
+              </div>
+
+              {formData.kidsUseTech === 'yes' && (
+                <>
+                  <div>
+                    <label className="block text-lg font-semibold mb-1">What are the devices used by your children?</label>
+                    <div className="space-y-1">
+                      {['Television', 'Laptop', 'Smart Phone', 'Tablet'].map(device => (
+                        <label key={device} className="block"><input type="checkbox" name="devicesUsed" value={device} onChange={handleChange} /> {device}</label>
+                      ))}
+                    </div>
+                    <input type="text" name="otherDevices" placeholder="Other Devices" value={formData.otherDevices} onChange={handleChange} className="w-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" />
+                  </div>
+
+                  <div>
+                    <label className="block text-lg font-semibold mb-1">What is the average screen time (hrs/day) of your children?</label>
+                    <input type="number" name="screenTime" value={formData.screenTime} onChange={handleChange} className="w-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" />
+                  </div>
+
+                  <div>
+                    <label className="block text-lg font-semibold mb-1">What are the purposes that your children use devices for?</label>
+                    <div className="space-y-1">
+                      {['Studies', 'Entertainment', 'Social Media'].map(purpose => (
+                        <label key={purpose} className="block"><input type="checkbox" name="usagePurpose" value={purpose} onChange={handleChange} /> {purpose}</label>
+                      ))}
+                    </div>
+                    <input type="text" name="otherUsagePurpose" placeholder="Other purpose" value={formData.otherUsagePurpose} onChange={handleChange} className="w-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" />
+                  </div>
+
+                  <div>
+                    <label className="block text-lg font-semibold mb-1">Are you troubled by your child's use of technological devices?</label>
+                    <div className="space-y-1">
+                      <label className="block"><input type="radio" name="troubledByUsage" value="yes" onChange={handleChange} /> Yes</label>
+                      <label className="block"><input type="radio" name="troubledByUsage" value="no" onChange={handleChange} /> No</label>
+                    </div>
+                  </div>
+
+                  {formData.troubledByUsage === 'yes' && (
+                    <>
+                      <div>
+                        <label className="block text-lg font-semibold mb-1">Are you using any measures to control it?</label>
+                        <div className="space-y-1">
+                          <label className="block"><input type="radio" name="usingMeasures" value="yes" onChange={handleChange} /> Yes</label>
+                          <label className="block"><input type="radio" name="usingMeasures" value="no" onChange={handleChange} /> No</label>
+                        </div>
+                      </div>
+
+                      {formData.usingMeasures === 'yes' && (
+                        <div>
+                          <label className="block text-lg font-semibold mb-1">Please specify the measures:</label>
+                          <input type="text" name="measureDetails" value={formData.measureDetails} onChange={handleChange} className="w-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" />
+                        </div>
+                      )}
+
+                      <div>
+                        <label className="block text-lg font-semibold mb-1">What are your major concerns?</label>
+                        <div className="space-y-1">
+                          {['Violent content', 'Eye strain', 'Behavioral changes after exposure'].map(c => (
+                            <label key={c} className="block"><input type="checkbox" name="concerns" value={c} onChange={handleChange} /> {c}</label>
+                          ))}
+                        </div>
+                        <input type="text" name="otherConcerns" placeholder="Other concerns" value={formData.otherConcerns} onChange={handleChange} className="w-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" />
+                      </div>
+                      <div>
+                        <label className="block text-lg font-semibold mb-1">What’s your solution for the same?</label>
+                               <textarea
+                                name="solution"
+                                value={formData.solution}
+                                onChange={handleChange}
+                                className="w-full border p-2 rounded-lg"
+                                placeholder="Your suggested solution..."
+                                />
+                      </div>
+                    </>
+                  )}
+                </>
               )}
-            </div>
+            </>
           )}
-        </>
+
+          <div>
+            <label className="block text-lg font-semibold mb-1">What are your expectations from Palanam Technologies?</label>
+            <div className="space-y-1">
+              {['Regular Reporting', 'Blocking of age restricted content', 'Reducing screen-time'].map(e => (
+                <label key={e} className="block"><input type="checkbox" name="expectations" value={e} onChange={handleChange} /> {e}</label>
+              ))}
+            </div>
+            <input type="text" name="otherExpectations" placeholder="Other expectations" value={formData.otherExpectations} onChange={handleChange} className="w-full border-2 border-purple-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300" />
+          </div>
+
+          <div className="flex justify-center pt-6">
+            <button type="submit" className="bg-blue-400 text-white px-20 py-6 rounded-lg hover:bg-blue-600">Submit</button>
+          </div>
+        </form>
       )}
-
-      {/* Troubled by usage */}
-<div>
-  <p className="font-semibold mb-2">Are you troubled by your kid's high usage of phones and laptops?</p>
-  <label className="block">
-    <input type="radio" name="troubledByUsage" value="yes" onChange={handleChange} required />
-    <span className="ml-2">Yes</span>
-  </label>
-  <label className="block">
-    <input type="radio" name="troubledByUsage" value="no" onChange={handleChange} required />
-    <span className="ml-2">No</span>
-  </label>
-</div>
-
-{/* If troubled by usage, show concerns */}
-{formData.troubledByUsage === 'yes' && (
-  <>
-    {/* Major Concerns */}
-    <div>
-      <p className="font-semibold mb-2">What is a major concern?</p>
-      <label className="block">
-        <input type="checkbox" name="majorConcerns" value="Exposure to adult content" onChange={handleCheckboxChange} />
-        <span className="ml-2">Exposure to adult content</span>
-      </label>
-      <label className="block">
-        <input type="checkbox" name="majorConcerns" value="Privacy concerns" onChange={handleCheckboxChange} />
-        <span className="ml-2">Privacy concerns</span>
-      </label>
-      <label className="block">
-        <input type="checkbox" name="majorConcerns" value="Violent content" onChange={handleCheckboxChange} />
-        <span className="ml-2">Violent content</span>
-      </label>
-      <label className="block">
-        <input type="checkbox" name="majorConcerns" value="Other" onChange={handleCheckboxChange} />
-        <span className="ml-2">Other</span>
-      </label>
-      {formData.majorConcerns.includes("Other") && (
-        <input
-          type="text"
-          name="otherConcern"
-          placeholder="Please specify other concerns"
-          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 mt-2"
-          onChange={handleChange}
-        />
-      )}
+  
+    </div> 
     </div>
-
-    {/* Updated Palanam Expectations */}
-    <div>
-      <p className="font-semibold mb-2 mt-4">What are some key expectations from Palanam Technologies?</p>
-      <label className="block">
-        <input type="checkbox" name="palanamExpectations" value="Detailed reports" onChange={handleCheckboxChange} />
-        <span className="ml-2">Detailed reports</span>
-      </label>
-      <label className="block">
-        <input type="checkbox" name="palanamExpectations" value="Continuous surveillance on child's web surfing" onChange={handleCheckboxChange} />
-        <span className="ml-2">Continuous surveillance on child's web surfing</span>
-      </label>
-      <label className="block">
-        <input type="checkbox" name="palanamExpectations" value="Blocking of adult content" onChange={handleCheckboxChange} />
-        <span className="ml-2">Blocking of adult content</span>
-      </label>
-    </div>
-
-    {/* Additional Requirements */}
-    <textarea
-      name="additionalRequirements"
-      placeholder="If there are other requirements, please specify."
-      rows="3"
-      className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 mt-2"
-      onChange={handleChange}
-    />
-  </>
-)}
-
-
-      <button
-        type="submit"
-        className="bg-blue-300 hover:bg-blue-400 text-white font-semibold w-full py-2 rounded"
-      >
-        Submit Survey
-      </button>
-    </form>
-  );
+  </div>   
+);     
 };
-
 export default SurveyForm;
