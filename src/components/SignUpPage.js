@@ -31,7 +31,7 @@ const SignupPage = () => {
     }
   
     try {
-      const response = await axios.post("https://login-bcknd.onrender.com//api/users/signup", {
+      const response = await axios.post("https://login-bcknd.onrender.com/api/users/signup", {
         email: formData.email, // Use formData instead of email directly
         password: formData.password,
         name: formData.name,
