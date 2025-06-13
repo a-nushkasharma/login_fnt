@@ -13,7 +13,7 @@ const LoginModal = ({ setIsModalOpen }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://login-bcknd.onrender.com//api/users/login', {
+      const response = await axios.post('https://login-bcknd.onrender.com/api/users/login', {
         email,
         password
       });
