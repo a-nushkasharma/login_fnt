@@ -30,7 +30,7 @@ const SurveyForm = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/survey/submit', formData);
+      await axios.post('https://login-bcknd.onrender.com//api/survey/submit', formData);
       setSubmitted(true);
     } catch (error) {
       console.error(error);
