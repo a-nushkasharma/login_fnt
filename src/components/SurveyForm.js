@@ -64,7 +64,7 @@ const SurveyForm = () => {
     return;
   }
     try {
-      await axios.post('http://localhost:5000/api/survey/submit', formData);
+      await axios.post('https://login-bcknd.onrender.com/api/survey/submit', formData);
       localStorage.setItem('surveySubmitted', 'true');
       setSubmitted(true);
     } catch (error) {
